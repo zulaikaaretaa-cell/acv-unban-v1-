@@ -1,0 +1,45 @@
+
+name: Build ACV UNBAN V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Setup Android
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract ZIP
+        run: unzip -o ACV_UNBAN_V1_project.zip -d .
+
+      - name: Build APK
+        run: gradle -p ACV_UNBAN_V1 assembleDebug
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACV-UNBAN-V1-APK
+          path: ACV_UNBAN_V1/app/build/outputs/apk/debug/app-debug.apk
+
+      
